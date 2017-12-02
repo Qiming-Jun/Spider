@@ -9,6 +9,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConnectionUtil {
+	private static String resumeinf;
+	
+	private static String[] urlList;
+	
     public static String Connect(String address){
         HttpURLConnection conn = null;
         URL url = null;
@@ -94,10 +98,11 @@ public class ConnectionUtil {
     	String tmpStr = "";
     	
     	//匹配并获取个人信息的全部html
-        Pattern pattern1 = Pattern.compile("</span>基本信息</h3>.*?</div>");
+        Pattern pattern1 = Pattern.compile("</span>(基本信息|简历|Bio|Dr. Joyce Webb基本信息)</h3>.*?</div>");
         Matcher matcher1 = pattern1.matcher(targetStr);
         if (matcher1.find()){
         	tmpStr = matcher1.group();
+ //       	System.out.println(tmpStr);
         }else {
         	return "未找到个人简介信息";
         }
@@ -118,10 +123,68 @@ public class ConnectionUtil {
         }
         
         resultStr = new String(sb);
+        resumeinf = resultStr;
         
         return resultStr;
     }
     
+    public static String getAchievement(String targetStr) {
+    	String resultStr = "";
+    	String tmpStr = "";
+    	
+    	//匹配并获取荣誉称号的全部html
+        Pattern pattern1 = Pattern.compile("</span>荣誉称号</h3>.*?</div>");
+        Matcher matcher1 = pattern1.matcher(targetStr);
+        if (matcher1.find()){
+        	tmpStr = matcher1.group();
+        }else {
+        	return "未找到个人荣誉信息";
+        }
+        
+        //匹配并获取全部段落内信息
+        Pattern pattern2 = Pattern.compile("<(li|p).*?>(.*?)</(li|p)>");
+        Matcher matcher2 = pattern2.matcher(tmpStr);
+        while(matcher2.find()) {
+        	resultStr = resultStr + matcher2.group(2);
+        }
+        
+        //删除额外信息 比如<strong> <font> &nbsp 
+        Pattern pattern3 = Pattern.compile("(<.*?>)|(&nbsp;)|&ldquo|&rdquo|(\\t)");
+        Matcher matcher3 = pattern3.matcher(resultStr);
+        StringBuffer sb = new StringBuffer();
+        while(matcher3.find()) {
+        	matcher3.appendReplacement(sb, "");
+        }
+        
+        resultStr = new String(sb);  
+        return resultStr;
+    }
+    
+    public static String getSex(String targetStr) {
+        Pattern pattern1 = Pattern.compile("，男，");
+        Matcher matcher1 = pattern1.matcher(targetStr);
+        if (matcher1.find()){
+            return "男";
+        }
+        
+        Pattern pattern2 = Pattern.compile("，女，");
+        Matcher matcher2 = pattern2.matcher(targetStr);
+        if (matcher2.find()){
+            return "女";
+        }
+        
+        return "（性别信息未找到）";
+    }
+    
+    public static String getBirthday(String targetStr) {
+        Pattern pattern1 = Pattern.compile("(\\d{4})年生");
+        Matcher matcher1 = pattern1.matcher(targetStr);
+        if (matcher1.find()){
+            return matcher1.group(1);
+        }
+        
+        return "（生日信息未找到）";
+    }
     
     public static String getTest(String targetStr) {
         Pattern NamePattern=
@@ -141,21 +204,52 @@ public class ConnectionUtil {
         }
         return imgString;
     }
+/*-------------------------------------------------------------------------------*/
     
-    public static void main(String arg[]) {
-    	ConnectionUtil test = new ConnectionUtil();
-    	String result  = test.Connect("http://homepage.hit.edu.cn/renxl");
-//    	String result  = test.Connect("http://map.baidu.com/detail?qt=ninf&from=housezt&detail=house&uid=5ef5edbdc64c1bb49e9d6899");
+    public static String[] getUrl(int n) {
+    	String url = "http://homepage.hit.edu.cn/neiye.jsp?mcpy=";
+    	char indexchar;
+    	int index = 0;
+    	String[] urlList = new String[n];
+     	ConnectionUtil test = new ConnectionUtil();
     	
-//    	System.out.println(result);
-//    	System.out.println("输出结束");
+    	for(int i = 0; i < 26; i++) {
+    		if (i == 4 || i == 20 || i==21) continue;
+    		String htmltxt  = test.Connect(url + (char)(i+'a'));
+    		
+            Pattern pattern1 = Pattern.compile("<span>条结果</span></div>.*?<script type=\"text/javascript\">");
+            Matcher matcher1 = pattern1.matcher(htmltxt);
+            if(matcher1.find()) {
+            	String str1 = matcher1.group();
+            }
+            
+            Pattern pattern2 = Pattern.compile("<a href=\"(.*?)\" target=\"_self\">");
+            Matcher matcher2 = pattern2.matcher(htmltxt);
+            while(matcher2.find()) {
+            	urlList[index++] = matcher2.group(1);
+            }
+            System.out.println((char)(i+'a') + " finished," + "find "+index+" urls");
+            System.out.println("the last one is:" + urlList[index-1]);
+    	}
+    	
+    	return urlList;
+    }
+    
+/*-------------------------------------------------------------------------------*/    
+    public static void main(String arg[]) {
+    	/*ConnectionUtil test = new ConnectionUtil();
+    	String result  = test.Connect("http://homepage.hit.edu.cn/peterrolfe");  在这里输入网址   
     	
     	System.out.println("姓名："+getName(result));
     	System.out.println("电话："+getTel(result));
     	System.out.println("邮箱："+getEmail(result));
     	System.out.println("学院："+getCollege(result));
-   // 	System.out.println("测试："+getTest(result));
     	System.out.println("个人简介："+getResume(result));
+    	System.out.println("性别："+getSex(resumeinf));
+    	System.out.println("出生年月："+getBirthday(resumeinf));
+    	System.out.println("荣誉称号："+getAchievement(result));*/
+    	
+    	getUrl(3000);
     	
     }
 }
