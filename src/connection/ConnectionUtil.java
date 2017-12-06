@@ -23,8 +23,8 @@ public class ConnectionUtil {
         try {
             url = new URL(address);
             conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(30000);
-            conn.setReadTimeout(30000);
+            conn.setConnectTimeout(300000);
+            conn.setReadTimeout(300000);
             conn.setDoInput(true);
             conn.connect();
             in = conn.getInputStream();
@@ -56,11 +56,11 @@ public class ConnectionUtil {
         while (NameMatcher.find()){
             String imgString=NameMatcher.group(1);
             if(imgString=="") {
-            	return "£¨ĞÕÃûÎ´ÕÒµ½£©";
+            	return "ï¼ˆå§“åæœªæ‰¾åˆ°ï¼‰";
             }
             return imgString;
         }
-        return "£¨ĞÕÃûÎ´ÉèÖÃ£©";
+        return "ï¼ˆå§“åæœªè®¾ç½®ï¼‰";
     }
     
     public static String getTel(String targetStr) {
@@ -70,76 +70,78 @@ public class ConnectionUtil {
         while (NameMatcher.find()){
             String imgString=NameMatcher.group(1);
             if(imgString=="") {
-            	return "£¨TelÎ´ÕÒµ½£©";
+            	return "ï¼ˆTelæœªæ‰¾åˆ°ï¼‰";
             }
             return imgString;
         }
-        return "£¨ÁªÏµ·½Ê½Î´ÕÒµ½£©";
+        return "ï¼ˆè”ç³»æ–¹å¼æœªæ‰¾åˆ°ï¼‰";
     }
     
     public static String getEmail(String targetStr) {
         Pattern NamePattern=
-        		Pattern.compile("title=\"µã»÷·¢ËÍÓÊ¼ş\">([^<]*)<");
+        		Pattern.compile("title=\"ç‚¹å‡»å‘é€é‚®ä»¶\">([^<]*)<");
         Matcher NameMatcher=NamePattern.matcher(targetStr);
         while (NameMatcher.find()){
             String imgString=NameMatcher.group(1);
             if(imgString=="") {
-            	return "£¨EmailÎ´ÕÒµ½£©";
+            	return "ï¼ˆEmailæœªæ‰¾åˆ°ï¼‰";
             }
             return imgString;
         }
-        return "£¨EmailÎ´ÉèÖÃ£©";
+        return "ï¼ˆEmailæœªè®¾ç½®ï¼‰";
     }
     
     public static String getCollege(String targetStr) {
         Pattern NamePattern=
         		Pattern.compile("<tr><td width=\"70px\" "
-        				+ "class=\"show-title1\">Ä¿Ç°¾ÍÖ°</td><td width=\"300px\" class=\"show-text1\">([^<]*)<");
+        				+ "class=\"show-title1\">ç›®å‰å°±èŒ</td><td width=\"300px\" class=\"show-text1\">([^<]*)<");
         Matcher NameMatcher=NamePattern.matcher(targetStr);
         while (NameMatcher.find()){
             String imgString=NameMatcher.group(1);
             if(imgString=="") {
-            	return "£¨Ñ§ÔºĞÅÏ¢Î´ÉèÖÃ£©";
+            	return "ï¼ˆå­¦é™¢ä¿¡æ¯æœªè®¾ç½®ï¼‰";
             }
             return imgString;
         }
-        return "£¨Ñ§ÔºĞÅÏ¢Î´ÉèÖÃ£©";
+        return "ï¼ˆå­¦é™¢ä¿¡æ¯æœªè®¾ç½®ï¼‰";
     }
     
     public static String getResume(String targetStr) {
     	String resultStr = "";
     	String tmpStr = "";
     	
-    	//Æ¥Åä²¢»ñÈ¡¸öÈËĞÅÏ¢µÄÈ«²¿html
-        Pattern pattern1 = Pattern.compile("</span>(»ù±¾ĞÅÏ¢|¼òÀú|Bio|Dr. Joyce Webb»ù±¾ĞÅÏ¢)</h3>.*?</div>");
+    	//åŒ¹é…å¹¶è·å–ä¸ªäººä¿¡æ¯çš„å…¨éƒ¨html
+        Pattern pattern1 = Pattern.compile("</span>(åŸºæœ¬ä¿¡æ¯|ç®€å†|Bio|Dr. Joyce WebbåŸºæœ¬ä¿¡æ¯)</h3>.*?</div>");
         Matcher matcher1 = pattern1.matcher(targetStr);
         if (matcher1.find()){
         	tmpStr = matcher1.group();
  //       	System.out.println(tmpStr);
         }else {
-        	return "Î´ÕÒµ½¸öÈË¼ò½éĞÅÏ¢";
+        	return "æœªæ‰¾åˆ°ä¸ªäººç®€ä»‹ä¿¡æ¯";
         }
         
-        //Æ¥Åä²¢»ñÈ¡È«²¿¶ÎÂäÄÚĞÅÏ¢
+        //åŒ¹é…å¹¶è·å–å…¨éƒ¨æ®µè½å†…ä¿¡æ¯
         Pattern pattern2 = Pattern.compile("<p.*?>(.*?)</p>");
         Matcher matcher2 = pattern2.matcher(tmpStr);
         while(matcher2.find()) {
         	resultStr = resultStr + matcher2.group(1);
         }
         
-        //É¾³ı¶îÍâĞÅÏ¢ ±ÈÈç<strong> <font> &nbsp 
+        //åˆ é™¤é¢å¤–ä¿¡æ¯ æ¯”å¦‚<strong> <font> &nbsp 
         Pattern pattern3 = Pattern.compile("(<.*?>)|(&nbsp;)|(\\t)");
         Matcher matcher3 = pattern3.matcher(resultStr);
+
         StringBuffer sb = new StringBuffer();
         while(matcher3.find()) {
         	matcher3.appendReplacement(sb, "");
         }
+        matcher3.appendTail(sb);			//!!!!åƒä¸‡åˆ«å¿˜äº†åŠ è¿™ä¸€å¥ï¼ï¼  è¯¦è§http://blog.csdn.net/marryshi/article/details/42745769
         
         resultStr = new String(sb);
         resultStr = resultStr.replace("\"", "'");
         resumeinf = resultStr;
         if(resumeinf=="") {
-        	return "¸öÈË¼ò½éÎ´ÕÒµ½";
+        	return "ä¸ªäººç®€ä»‹æœªæ‰¾åˆ°";
         }
         
         if(resultStr.length()>2900) {
@@ -152,23 +154,23 @@ public class ConnectionUtil {
     	String resultStr = "";
     	String tmpStr = "";
     	
-    	//Æ¥Åä²¢»ñÈ¡ÈÙÓş³ÆºÅµÄÈ«²¿html
-        Pattern pattern1 = Pattern.compile("</span>ÈÙÓş³ÆºÅ</h3>.*?</div>");
+    	//åŒ¹é…å¹¶è·å–è£èª‰ç§°å·çš„å…¨éƒ¨html
+        Pattern pattern1 = Pattern.compile("</span>è£èª‰ç§°å·</h3>.*?</div>");
         Matcher matcher1 = pattern1.matcher(targetStr);
         if (matcher1.find()){
         	tmpStr = matcher1.group();
         }else {
-        	return "Î´ÕÒµ½¸öÈËÈÙÓşĞÅÏ¢";
+        	return "æœªæ‰¾åˆ°ä¸ªäººè£èª‰ä¿¡æ¯";
         }
         
-        //Æ¥Åä²¢»ñÈ¡È«²¿¶ÎÂäÄÚĞÅÏ¢
+        //åŒ¹é…å¹¶è·å–å…¨éƒ¨æ®µè½å†…ä¿¡æ¯
         Pattern pattern2 = Pattern.compile("<(li|p).*?>(.*?)</(li|p)>");
         Matcher matcher2 = pattern2.matcher(tmpStr);
         while(matcher2.find()) {
         	resultStr = resultStr + matcher2.group(2);
         }
         
-        //É¾³ı¶îÍâĞÅÏ¢ ±ÈÈç<strong> <font> &nbsp 
+        //åˆ é™¤é¢å¤–ä¿¡æ¯ æ¯”å¦‚<strong> <font> &nbsp 
         Pattern pattern3 = Pattern.compile("(<.*?>)|(&nbsp;)|&ldquo|&rdquo|(\\t)");
         Matcher matcher3 = pattern3.matcher(resultStr);
         StringBuffer sb = new StringBuffer();
@@ -179,7 +181,7 @@ public class ConnectionUtil {
         resultStr = new String(sb);  
         resultStr = resultStr.replace("\"", "'");
         if(resultStr=="") {
-        	return "¸öÈËÈÙÓşĞÅÏ¢Î´ÕÒµ½";
+        	return "ä¸ªäººè£èª‰ä¿¡æ¯æœªæ‰¾åˆ°";
         }
         
         if(resultStr.length()>2900) {
@@ -189,29 +191,29 @@ public class ConnectionUtil {
     }
     
     public static String getSex(String targetStr) {
-        Pattern pattern1 = Pattern.compile("£¬ÄĞ£¬");
+        Pattern pattern1 = Pattern.compile("ï¼Œç”·ï¼Œ");
         Matcher matcher1 = pattern1.matcher(targetStr);
         if (matcher1.find()){
-            return "ÄĞ";
+            return "ç”·";
         }
         
-        Pattern pattern2 = Pattern.compile("£¬Å®£¬");
+        Pattern pattern2 = Pattern.compile("ï¼Œå¥³ï¼Œ");
         Matcher matcher2 = pattern2.matcher(targetStr);
         if (matcher2.find()){
-            return "Å®";
+            return "å¥³";
         }
         
-        return "£¨ĞÔ±ğĞÅÏ¢Î´ÕÒµ½£©";
+        return "ï¼ˆæ€§åˆ«ä¿¡æ¯æœªæ‰¾åˆ°ï¼‰";
     }
     
     public static String getBirthday(String targetStr) {
-        Pattern pattern1 = Pattern.compile("(\\d{4}).*?ÄêÉú");
+        Pattern pattern1 = Pattern.compile("(\\d{4}).*?å¹´ç”Ÿ");
         Matcher matcher1 = pattern1.matcher(targetStr);
         if (matcher1.find()){
             return matcher1.group(1);
         }
         
-        return "£¨ÉúÈÕĞÅÏ¢Î´ÕÒµ½£©";
+        return "ï¼ˆç”Ÿæ—¥ä¿¡æ¯æœªæ‰¾åˆ°ï¼‰";
     }
     
     public static String getTest(String targetStr) {
@@ -247,7 +249,7 @@ public class ConnectionUtil {
     		String htmltxt  = test.Connect(url + (char)(i+'a'));
     		String str1 = "";
     		
-            Pattern pattern1 = Pattern.compile("<span>Ìõ½á¹û</span></div>.*?<script type=\"text/javascript\">");
+            Pattern pattern1 = Pattern.compile("<span>æ¡ç»“æœ</span></div>.*?<script type=\"text/javascript\">");
             Matcher matcher1 = pattern1.matcher(htmltxt);
             if(matcher1.find()) {
             	str1 = matcher1.group();
@@ -261,7 +263,7 @@ public class ConnectionUtil {
             while(matcher2.find()) {
             	urlList[index++] = matcher2.group(1);
             	System.out.println("No." + (index-1) + ":" + urlList[index-1]);
-            	teacherNum += 1; 		//½ÌÊ¦¸öÊı¼ÆÊı
+            	teacherNum += 1; 		//æ•™å¸ˆä¸ªæ•°è®¡æ•°
             }
             
             System.out.println((char)(i+'a') + " finished," + "find "+index+" urls");
@@ -362,20 +364,22 @@ public class ConnectionUtil {
 /*-------------------------------------------------------------------------------*/    
     public static void main(String arg[]) {
     	/*ConnectionUtil test = new ConnectionUtil();
-    	String result  = test.Connect("http://homepage.hit.edu.cn/peterrolfe");  ÔÚÕâÀïÊäÈëÍøÖ·   
+    	String result  = test.Connect("http://homepage.hit.edu.cn/peterrolfe");  åœ¨è¿™é‡Œè¾“å…¥ç½‘å€   
     	
-    	System.out.println("ĞÕÃû£º"+getName(result));
-    	System.out.println("µç»°£º"+getTel(result));
-    	System.out.println("ÓÊÏä£º"+getEmail(result));
-    	System.out.println("Ñ§Ôº£º"+getCollege(result));
-    	System.out.println("¸öÈË¼ò½é£º"+getResume(result));
-    	System.out.println("ĞÔ±ğ£º"+getSex(resumeinf));
-    	System.out.println("³öÉúÄêÔÂ£º"+getBirthday(resumeinf));
-    	System.out.println("ÈÙÓş³ÆºÅ£º"+getAchievement(result));*/
+    	System.out.println("å§“åï¼š"+getName(result));
+    	System.out.println("ç”µè¯ï¼š"+getTel(result));
+    	System.out.println("é‚®ç®±ï¼š"+getEmail(result));
+    	System.out.println("å­¦é™¢ï¼š"+getCollege(result));
+    	System.out.println("ä¸ªäººç®€ä»‹ï¼š"+getResume(result));
+    	System.out.println("æ€§åˆ«ï¼š"+getSex(resumeinf));
+    	System.out.println("å‡ºç”Ÿå¹´æœˆï¼š"+getBirthday(resumeinf));
+    	System.out.println("è£èª‰ç§°å·ï¼š"+getAchievement(result));*/
     	
     	urlList = getUrl(3000);
     	getAllinf(2635);
     	infToSql(2635);
+    	
+  //  	System.out.println(getResume(Connect("http://homepage.hit.edu.cn/bichunling")));
     	
     }
 }
